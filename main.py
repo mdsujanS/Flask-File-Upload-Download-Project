@@ -23,8 +23,18 @@ class FileUpload(db.Model):
 with app.app_context():
     db.create_all()
     
+    
+
+# Show all image in Frontend 
+@app.route('/')
+def show_all_image():
+    all_image = FileUpload.query.all()
+    return render_template('all_images.html', images=all_image)
+    
+
+    
 # Upload File    
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/upload', methods=['POST', 'GET'])
 def Upload_file():
     if request.method =='POST':
         upload_file = request.files['file']
@@ -36,9 +46,9 @@ def Upload_file():
             db.session.commit()
             
             flash('File Upload Successfully')
-            return redirect(url_for('Upload_file'))
+            return redirect(url_for('show_all_image'))
         
-    return render_template('home.html')
+    return render_template('upload.html')
 
 # Allowed File Extension                      
 def Allowed_file(filename):
@@ -50,6 +60,7 @@ def Allowed_file(filename):
 def Download_file(id):
     file_data = FileUpload.query.get(id)
     return send_file(BytesIO(file_data.file), download_name = file_data.filename, as_attachment=True)
+
 
     
 if __name__=='__main__':
