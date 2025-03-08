@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICTIONS'] = False
 
 db = SQLAlchemy(app)
 
-# Models 
+# Models to upload file
 class FileUpload(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(50), nullable=False)
@@ -33,8 +33,8 @@ def show_all_image():
     
 
     
-# Upload File    
-@app.route('/upload', methods=['POST', 'GET'])
+# Upload File  
+@app.route('/upload', methods=['POST'])
 def Upload_file():
     if request.method =='POST':
         upload_file = request.files['file']
@@ -45,17 +45,16 @@ def Upload_file():
             db.session.add(upload)
             db.session.commit()
             
-            flash('File Upload Successfully')
             return redirect(url_for('show_all_image'))
         
     return render_template('upload.html')
 
 # Allowed File Extension                      
 def Allowed_file(filename):
-    ALLOWED_EXTENSION = ['pdf', 'png', 'jpg', 'jpeg', 'text']
+    ALLOWED_EXTENSION = [ 'png', 'jpg', 'jpeg']
     return "." in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSION
 
-#Download File
+#Download File by id 
 @app.route('/download/<int:id>')
 def Download_file(id):
     file_data = FileUpload.query.get(id)
